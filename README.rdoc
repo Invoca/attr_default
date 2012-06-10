@@ -1,0 +1,106 @@
+= AttrDefault
+
+Dynamic Ruby defaults for ActiveRecord attributes.
+These are lazy evaluated just in time: when first accessed, or just before validation or save.
+This allows dynamic defaults to depend on attributes that are assigned after initialization, or on other dynamic defaults.
+
+Example:
+
+  class User < ActiveRecord::Base
+    attr_default      :middle_name, ''
+    attr_default      :guid, lambda { GuidGenerator.new }
+    attr_default      :managed, lambda { organization.managed? }
+
+    belongs_to :organization
+    ...
+  end
+
+== Installation
+
+Add this line to your application's Gemfile:
+
+  gem 'attr_default'
+
+And then execute:
+
+  $ bundle
+
+Or install it yourself as:
+
+  $ gem install attr_default
+
+== Usage
+
+  require 'attr_default'
+
+This makes the +attr_default+ macro available to all objects derived fromActiveRecord::Base.
+
+=== The attr_default Macro
+
+The +attr_default+ macro takes 2 arguments:
+
+[attr_name]  The name of the attribute, given as a symbol or string.
+[default]    The default value to use, either as a simple value or a Proc. If a Proc, attr_default will call it in the context of the object.
+             This makes it convenient for dynamic defaults to be computed based on other attributes or associations.
+
++attr_default+ can be used for persistent or non-persistent attributes.
+
+=== Timing of Default Computation
+
+Defaults are lazy computed, just in time, whenever the first of these happens:
+
+* The attribute is read.
+* The object's before_validation callback is called.
+* The object's before_save callback is called.
+
+This allows dynamic defaults to depend on other attributes that may be assigned after the initializer, and even other dynamic defaults.
+For example:
+
+  class User < ActiveRecord::Base
+    attr_default      :first_name, 'First'
+    attr_default      :last_name, 'Last'
+    attr_default      :name_addr, lambda { "#{full_name} <#{email}>" }
+
+    def full_name
+      [first_name, middle_name, last_name].select { |name| name unless name.blank? } * ' '
+    end
+  end
+
+  user1 = User.create :email => 'joe@yahoo.com', :first_name => 'Joe'
+  user1.name_addr # =>  "Joe Last <joe@yahoo.com>"
+
+  user2 = User.create :email => 'jane@yahoo.com'
+  user2.last_name = 'Doe'
+  user2.name_addr # =>  "First Doe <jane@yahoo.com>"
+
+=== Use with Hobofields
+
+With Hobofields, defaults can be set using the +:ruby_default+ option:
+
+  class User < ActiveRecord::Base
+    fields do
+      first_name  :string, :ruby_default => 'First'
+      last_name   :string, :ruby_default => 'Last'
+      email       :string
+      name_addr   :string, :ruby_default => lambda { "#{full_name} <#{email}>" }
+      ...
+    end
+
+    def full_name
+      [first_name, middle_name, last_name].select { |name| name unless name.blank? } * ' '
+    end
+  end
+
+The +:default+ option controls the default in SQL, unless a Ruby Proc is given in which case it is treated as +:ruby_default+.
+
+=== Interaction with +clone+
+
+Dynamic defaults work with +clone+, following the same timing given above.
+
+== Contributing
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
