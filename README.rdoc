@@ -62,7 +62,7 @@ For example:
     attr_default      :name_addr, lambda { "#{full_name} <#{email}>" }
 
     def full_name
-      [first_name, middle_name, last_name].select { |name| name unless name.blank? } * ' '
+      [first_name, middle_name, last_name].select { |name| !name.blank? } * ' '
     end
   end
 
