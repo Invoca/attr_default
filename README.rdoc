@@ -1,11 +1,7 @@
 = AttrDefault
 
 Dynamic Ruby defaults for ActiveRecord attributes.
-These defaults are evaluated just in time, meaning the first of:
-1. when first read
-1. before validation
-1. before save.
-This allows dynamic defaults to depend on attributes that are assigned after initialization, or on other dynamic defaults.
+These defaults are evaluated just in time, allowing dynamic defaults to depend on attributes that are assigned after initialization, or on other dynamic defaults.
 
 Example:
 
@@ -48,7 +44,7 @@ The +attr_default+ macro takes 2 arguments:
 
 +attr_default+ can be used for persistent or non-persistent attributes.
 
-=== Timing of Default Computation
+=== Timing of Default Evaluation
 
 Defaults are lazy computed, just in time, whenever the first of these happens:
 
