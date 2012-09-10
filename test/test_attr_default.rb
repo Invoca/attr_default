@@ -1,4 +1,4 @@
-WANT_RAILS_VERSION = "~> #{ENV.fetch('WANT_RAILS_VERSION', '2.3.4')}"
+WANT_RAILS_VERSION = "~> #{ENV.fetch('WANT_RAILS_VERSION', '3.0.15')}"
 
 require 'rubygems'
 gem 'rails', WANT_RAILS_VERSION
@@ -48,8 +48,8 @@ ActiveRecord::Base.connection.create_table(:test_numbers, :force => true) do |t|
 end
 
 if defined?(Rails::Railtie)
-  DefaultValueFor.initialize_railtie
-  DefaultValueFor.initialize_active_record_extensions
+  AttrDefault.initialize_railtie
+  AttrDefault.initialize_active_record_extensions
 end
 
 class TestUser < ActiveRecord::Base
@@ -253,3 +253,4 @@ class AttrDefaultTest < Test::Unit::TestCase
     assert_equal "supersecret", user.password
   end
 end
+
