@@ -28,15 +28,15 @@ ActiveRecord::Base.establish_connection(
 ActiveRecord::Base.connection.create_table(:test_users, :force => true) do |t|
   t.string :first_name, :default => ''
   t.string :last_name
-  t.boolean :managed, :default => false
+  t.string :domain, :default => 'example.com'
   t.timestamp :timestamp
 end
 
-ActiveRecord::Base.connection.create_table(:test_numbers, :force => true) do |t|
+ActiveRecord::Base.connection.create_table(:test_domains, :force => true) do |t|
   t.string  :type
   t.integer :test_user_id
-  t.integer :number
-  t.boolean :managed
+  t.string :domain, :default => 'domain.com'
+  t.string :path
   t.timestamp :created_at
 end
 
@@ -53,37 +53,41 @@ class TestUser < ActiveRecord::Base
     fields do
       first_name    :string, :default => '', :ruby_default => lambda { 'John' }
       last_name     :string, :ruby_default => 'Doe'
+      domain        :string, :ruby_default => 'default.com'
       timestamp     :timestamp, :default => lambda { (Time.zone || ActiveSupport::TimeZone['Pacific Time (US & Canada)']).now }
     end
   else
     attr_default :first_name, 'John'
     attr_default :last_name, 'Doe'
+    attr_default :domain, 'default.com'
     attr_default :timestamp, lambda { (Time.zone || ActiveSupport::TimeZone['Pacific Time (US & Canada)']).now }
   end
 
-  has_many :test_numbers
-  has_many :test_numbers_subclass, :class_name => 'TestNumberSubclass'
+  has_many :test_domains
+  has_many :test_domains_subclass, :class_name => 'TestDomainSubclass'
 end
 
-class TestNumber < ActiveRecord::Base
+class TestDomain < ActiveRecord::Base
   if ENV['INCLUDE_HOBO']
     fields do
-      managed       :boolean, :default => lambda { test_user.managed }
+      domain      :string, :default => lambda { test_user.domain }
+      path        :string, :ruby_default => "/path"
     end
   else
-    attr_default :managed, lambda { test_user.managed }
+    attr_default :domain, lambda { test_user.domain }
+    attr_default :path, "/path"
   end
 
   belongs_to :test_user
 end
 
-class TestNumberSubclass < TestNumber
+class TestDomainSubclass < TestDomain
   if ENV['INCLUDE_HOBO']
     fields do
-      managed       :boolean, :default => lambda { false }
+      domain      :string, :default => lambda { "sub_#{test_user.domain}" }
     end
   else
-    attr_default :managed, lambda { false }
+    attr_default :domain, lambda { "sub_#{test_user.domain}" }
   end
 end
 
@@ -137,11 +141,11 @@ class AttrDefaultTest < Test::Unit::TestCase
   end
 
   def test_nonproc_default_value_for_string_and_symbol
-    u = TestUser.new(:managed => true)
+    u = TestUser.new(:domain => "initial.com")
     u.save!
-    assert_equal true, u.managed
-    assert_equal false, u.default_value_for("managed")
-    assert_equal false, u.default_value_for(:managed)
+    assert_equal "initial.com", u.domain
+    assert_equal "default.com", u.default_value_for("domain")
+    assert_equal "default.com", u.default_value_for(:domain)
   end
 
   def test_reset_to_default_value_string
@@ -185,13 +189,13 @@ class AttrDefaultTest < Test::Unit::TestCase
   end
 
   def test_use_default_when_saved_if_not_touched
-    user = TestUser.create! :managed => true
-    number = user.test_numbers.build
+    user = TestUser.create! :domain => "initial.com"
+    domain = user.test_domains.build
 
-    number.save!
-    number.reload
-    assert_equal true, number.read_attribute(:managed)
-    assert_equal true, number.managed
+    domain.save!
+    domain.reload
+    assert_equal "initial.com", domain.read_attribute(:domain)
+    assert_equal "initial.com", domain.domain
   end
 
   def test_clone_touched_state_when_cloned_before_save_new_record_true
@@ -222,46 +226,54 @@ class AttrDefaultTest < Test::Unit::TestCase
   end
 
   def test_use_default_when_saved_if_not_touched_and_validation_turned_off
-    user = TestUser.create! :managed => true
-    number = user.test_numbers.build :number => 42
+    user = TestUser.create! :domain => "initial.com"
+    domain = user.test_domains.build
 
-    # not touched or saved yet, still empty
-    assert_equal nil, number.read_attribute(:managed)
+    # not touched or saved yet, still SQL default
+    assert_equal "domain.com", domain.read_attribute(:domain)
 
-    number.save(false)
+    domain.save(false)
 
-    # now it should be true
-    assert_equal true, number.read_attribute(:managed)
-    assert_equal true, number.managed
+    # now it should be set to Ruby default
+    assert_equal "initial.com", domain.read_attribute(:domain)
+    assert_equal "initial.com", domain.domain
   end
 
   def test_use_value_set_on_object_even_when_first_loaded_from_db
-    user = TestUser.create! :managed => true
-    number = user.test_numbers.create! :number => 42, :managed => false
-    number_find = TestNumber.find(number.id)
-    assert_equal false, number_find.managed
+    user = TestUser.create! :domain => "initial.com"
+    domain = user.test_domains.create! :domain => "domain.initial.com"
+    number_find = TestDomain.find(domain.id)
+    assert_equal "domain.initial.com", number_find.domain
   end
 
-  [false, true].each do |user_managed|
-    define_method "test_default_#{user_managed}_and_param_not_specified" do
-      user = TestUser.create! :managed => user_managed
-      number = user.test_numbers.build
-      assert_equal user_managed, number.managed
+  ['example.com', 'domain.com', 'default.com'].each do |user_domain|
+    define_method "test_default_#{user_domain}_and_param_not_specified" do
+      user = TestUser.create! :domain => user_domain
+      domain = user.test_domains.build
+      assert_equal user_domain, domain.domain
     end
 
-    define_method "test_default_#{user_managed}_and_#{!user_managed}_specified" do
-      user = TestUser.create! :managed => true
-      number = user.test_numbers.build :managed => !user_managed
-      assert_equal !user_managed, number.managed
+    define_method "test_default_#{user_domain}_and_other_specified" do
+      user = TestUser.create! :domain => user_domain
+      domain = user.test_domains.build :domain => "override.com"
+      assert_equal "override.com", domain.domain
     end
   end
 
   def test_allow_subclass_to_override_the_default
-    user = TestUser.create! :managed => true
-    number = user.test_numbers.new
-    assert_equal true, number.managed
-    number_subclass = user.test_numbers_subclass.new
-    assert_equal false, number_subclass.managed
+    user = TestUser.create! :domain => 'initial.com'
+    domain = user.test_domains.new
+    assert_equal 'initial.com', domain.domain
+    domain_subclass = user.test_domains_subclass.new
+    assert_equal 'sub_initial.com', domain_subclass.domain
+  end
+
+  def test_subclass_uses_base_class_default
+    user = TestUser.create! :domain => 'initial.com'
+    domain = user.test_domains.new
+    assert_equal '/path', domain.path
+    domain_subclass = user.test_domains_subclass.new
+    assert_equal '/path', domain_subclass.path
   end
 
   def test_non_persistent_use_default_if_not_set
@@ -280,4 +292,3 @@ class AttrDefaultTest < Test::Unit::TestCase
     assert_equal "supersecret", user.password
   end
 end
-

@@ -38,7 +38,7 @@ module AttrDefault
     end
 
     def _attr_defaults
-      @_attr_defaults ||= {}
+      @_attr_defaults ||= (ancestors[1]._attr_defaults.dup rescue nil) || {}
     end
   end
 
