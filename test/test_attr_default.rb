@@ -1,16 +1,9 @@
-WANT_RAILS_VERSION = "~> #{ENV.fetch('WANT_RAILS_VERSION', '3.0.15')}"
-
 require 'rubygems'
-gem 'rails', WANT_RAILS_VERSION
-gem 'activerecord', WANT_RAILS_VERSION
-begin
-  require 'rails/railtie'
-rescue LoadError
-end
+require 'active_support'
+require 'active_support/dependencies'
 require 'active_record'
 ActiveRecord::ActiveRecordError # work-around from https://rails.lighthouseapp.com/projects/8994/tickets/2577-when-using-activerecordassociations-outside-of-rails-a-nameerror-is-thrown
 require 'test/unit'
-require 'active_support/dependencies'
 require 'active_support/core_ext/logger'
 require 'hobofields' if ENV['INCLUDE_HOBO']
 
@@ -33,9 +26,9 @@ ActiveRecord::Base.establish_connection(
 )
 
 ActiveRecord::Base.connection.create_table(:test_users, :force => true) do |t|
-  t.string :first_name
+  t.string :first_name, :default => ''
   t.string :last_name
-  t.boolean :managed
+  t.boolean :managed, :default => false
   t.timestamp :timestamp
 end
 
@@ -58,8 +51,8 @@ class TestUser < ActiveRecord::Base
 
   if ENV['INCLUDE_HOBO']
     fields do
-      first_name    :string, :default => '', :ruby_default => 'John'
-      last_name     :string, :default => 'Doe'
+      first_name    :string, :default => '', :ruby_default => lambda { 'John' }
+      last_name     :string, :ruby_default => 'Doe'
       timestamp     :timestamp, :default => lambda { (Time.zone || ActiveSupport::TimeZone['Pacific Time (US & Canada)']).now }
     end
   else
@@ -112,7 +105,7 @@ class AttrDefaultTest < Test::Unit::TestCase
 
   def test_use_default_if_not_set
     u = TestUser.new
-    assert_equal nil, u.read_attribute(:last_name)
+    assert_equal '', u.read_attribute(:first_name)
     assert_equal "Doe", u.last_name
   end
 
@@ -130,15 +123,45 @@ class AttrDefaultTest < Test::Unit::TestCase
   end
 
   def test_allow_an_override_to_be_specified
-    u = TestUser.new( :last_name => "override" )
+    u = TestUser.new(:last_name => "override")
     assert_equal "override", u.read_attribute(:last_name)
     assert_equal "override", u.last_name
+  end
+
+  def test_proc_default_value_for_string_and_symbol
+    u = TestUser.new(:first_name => "override")
+    u.save!
+    assert_equal "override", u.first_name
+    assert_equal "John", u.default_value_for("first_name")
+    assert_equal "John", u.default_value_for(:first_name)
+  end
+
+  def test_nonproc_default_value_for_string_and_symbol
+    u = TestUser.new(:managed => true)
+    u.save!
+    assert_equal true, u.managed
+    assert_equal false, u.default_value_for("managed")
+    assert_equal false, u.default_value_for(:managed)
+  end
+
+  def test_reset_to_default_value_string
+    u = TestUser.create!(:last_name => "override")
+    assert_equal "override", u.last_name
+    u.reset_to_default_value("last_name")
+    assert_equal "Doe", u.last_name
+  end
+
+  def test_reset_to_default_value_symbol
+    u = TestUser.create!(:last_name => "override")
+    assert_equal "override", u.last_name
+    u.reset_to_default_value(:last_name)
+    assert_equal "Doe", u.last_name
   end
 
   if ENV['INCLUDE_HOBO']
     def test_hobo_allow_default_and_ruby_default
       u = TestUser.new
-      assert_equal nil, u.read_attribute(:first_name)
+      assert_equal "", u.read_attribute(:first_name)
       assert_equal "", TestUser.field_specs['first_name'].options[:default]
       assert_equal "John", TestUser.field_specs['first_name'].options[:ruby_default].call
       assert_equal "John", u.first_name
@@ -149,11 +172,15 @@ class AttrDefaultTest < Test::Unit::TestCase
     u = TestUser.new
     u2 = TestUser.new
 
+    assert_equal "John", u2.first_name
     assert_equal "Doe", u2.last_name
+    u.first_name.upcase!
     u.last_name.upcase!
+    assert_equal "John", u2.first_name # should not be JOHN
     assert_equal "Doe", u2.last_name  # should not be DOE
 
     u3 = TestUser.new
+    assert_equal "John", u2.first_name
     assert_equal "Doe", u3.last_name
   end
 
