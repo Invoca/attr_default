@@ -45,6 +45,10 @@ if defined?(Rails::Railtie)
   AttrDefault.initialize_active_record_extensions
 end
 
+module SomeOtherModule
+
+end
+
 class TestUser < ActiveRecord::Base
   attr_accessor     :password
   attr_default      :password, '<none>'
@@ -82,6 +86,7 @@ class TestDomain < ActiveRecord::Base
 end
 
 class TestDomainSubclass < TestDomain
+  include SomeOtherModule
   if ENV['INCLUDE_HOBO']
     fields do
       domain      :string, :default => lambda { "sub_#{test_user.domain}" }
