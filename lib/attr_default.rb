@@ -47,7 +47,7 @@ module AttrDefault
       attr_name = attr_name.to_s
       if self.class._attr_defaults.has_key?(attr_name)
         attr_default = self.class._attr_defaults[attr_name]
-        attr_default.is_a?(Proc) ? instance_eval(&attr_default) : (attr_default.dup rescue attr_default)
+        attr_default.is_a?(Proc) ? instance_exec(&attr_default) : (attr_default.dup rescue attr_default)
       else
         column_data = self.class.columns_hash[attr_name] or raise ArgumentError, "#{self.class.name}##{attr_name} not found"
         column_data.default
