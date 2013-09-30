@@ -17,6 +17,20 @@ else
   database_adapter = "sqlite3"
 end
 
+SAVE_NO_VALIDATE =
+  if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.0')
+    {:validate => false}
+  else
+    false
+  end
+
+DUP_METHOD =
+  if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
+    :dup
+  else
+    :clone
+  end
+
 File.unlink('test.sqlite3') rescue nil
 ActiveRecord::Base.logger = Logger.new(STDERR)
 ActiveRecord::Base.logger.level = Logger::WARN
@@ -29,6 +43,7 @@ ActiveRecord::Base.connection.create_table(:test_users, :force => true) do |t|
   t.string :first_name, :default => ''
   t.string :last_name
   t.string :domain, :default => 'example.com'
+  t.string :password
   t.timestamp :timestamp
 end
 
@@ -120,11 +135,11 @@ class AttrDefaultTest < Test::Unit::TestCase
 
   def test_return_the_ActiveRecord_native_type_not_the_lambda_type
     u = TestUser.new
-    assert_equal 'ActiveSupport::TimeWithZone', u.timestamp.class.name
+    assert_equal ActiveSupport::TimeWithZone, u.timestamp.class
     begin
       old_time_zone, Time.zone = Time.zone, 'Central Time (US & Canada)'
       u = TestUser.new
-      assert_equal 'ActiveSupport::TimeWithZone', u.timestamp.class.name
+      assert_equal ActiveSupport::TimeWithZone, u.timestamp.class
       assert_match /Central Time/, u.timestamp.time_zone.to_s
     ensure
       Time.zone = old_time_zone
@@ -203,24 +218,24 @@ class AttrDefaultTest < Test::Unit::TestCase
     assert_equal "initial.com", domain.domain
   end
 
-  def test_clone_touched_state_when_cloned_before_save_new_record_true
+  def test_dup_touched_state_when_duped_before_save_new_record_true
     u = TestUser.new :first_name => 'John', :last_name => 'Doe'
     u.last_name = 'overridden'
-    u2 = u.clone
+    u2 = u.send(DUP_METHOD)
     assert_equal 'overridden', u2.read_attribute(:last_name)
     assert_equal 'overridden', u2.last_name
   end
 
-  def test_clone_touched_state_when_cloned_after_save_new_record_false
-    u = TestUser.new :first_name => 'John', :last_name => 'Doe'
+  def test_dup_touched_state_when_duped_after_save_new_record_false
+    u = TestUser.new(:first_name => 'John', :last_name => 'Doe')
     u.last_name = 'overridden'
-    u2 = u.clone
+    u2 = u.send(DUP_METHOD)
     u2.save!
     u.save!
-    assert u.clone.instance_variable_get(:@_attr_defaults_set_from_clone)
-    assert_equal 'overridden', u.clone.last_name
+    assert u.send(DUP_METHOD).instance_variable_get(:@_attr_defaults_set_from_dup)
+    assert_equal 'overridden', u.send(DUP_METHOD).last_name
     ufind = TestUser.find(u.id)
-    u3 = ufind.clone
+    u3 = ufind.send(DUP_METHOD)
     assert_equal 'overridden', u3.read_attribute(:last_name), u3.attributes.inspect
     assert_equal 'overridden', u3.last_name
     u3.save!
@@ -237,7 +252,7 @@ class AttrDefaultTest < Test::Unit::TestCase
     # not touched or saved yet, still SQL default
     assert_equal "domain.com", domain.read_attribute(:domain)
 
-    domain.save(false)
+    domain.save(SAVE_NO_VALIDATE)
 
     # now it should be set to Ruby default
     assert_equal "initial.com", domain.read_attribute(:domain)

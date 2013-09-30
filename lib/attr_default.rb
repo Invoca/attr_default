@@ -9,7 +9,7 @@ module AttrDefault
       _attr_defaults[attr_name] = default
 
       define_method(attr_name) do
-        if new_record? && !@_attr_defaults_set_from_clone && !_attr_default_set[attr_name]
+        if new_record? && !@_attr_defaults_set_from_dup && !_attr_default_set[attr_name]
           reset_to_default_value(attr_name)
         end
         read_attribute_with_fixups(attr_name)
@@ -89,16 +89,30 @@ module AttrDefault
       self.class.send(:create_time_zone_conversion_attribute?, attr_name, self.class.columns_hash[attr_name])
     end
 
-    def clone
-      result = super
-      result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
-      result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
-      if self.new_record?
-        result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
-      else
-        result.instance_variable_set(:@_attr_defaults_set_from_clone, true)
+    if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
+      def dup
+        result = super
+        result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
+        result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
+        if self.new_record?
+          result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
+        else
+          result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
+        end
+        result
       end
-      result
+    else
+      def clone
+        result = super
+        result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
+        result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
+        if self.new_record?
+          result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
+        else
+          result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
+        end
+        result
+      end
     end
   end
 end

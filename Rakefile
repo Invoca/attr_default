@@ -1,9 +1,12 @@
 #!/usr/bin/env rake
 require "bundler/gem_tasks"
+require 'appraisal'
+require 'rubygems'
+require 'bundler/setup'
 
 task :default => :test
 
 desc "Run unit tests."
 task :test do
-  ruby "test/test_attr_default.rb"
+  ruby "test/attr_default_test.rb"
 end

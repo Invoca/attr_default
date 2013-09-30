@@ -1,9 +1,9 @@
 require File.expand_path('../lib/attr_default/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.add_development_dependency 'rack', '~> 1.1.0'
+  gem.add_development_dependency 'appraisal'
   gem.add_development_dependency 'rake', '~>0.9'
-  gem.add_development_dependency 'rails', '2.3.14'
+  gem.add_development_dependency 'pry'
   gem.add_development_dependency 'sqlite3'
   gem.add_development_dependency 'hobofields', '0.9.103'
   gem.authors       = ["Colin Kelley", "Nick Burwell"]
