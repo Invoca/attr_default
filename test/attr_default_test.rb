@@ -24,11 +24,13 @@ SAVE_NO_VALIDATE =
     false
   end
 
-DUP_METHOD =
+DUP_METHODS =
   if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
-    :dup
+    [:dup, :clone]
+  elsif Gem.loaded_specs['activesupport'].version >= Gem::Version.new('4.0')
+    [:dup]
   else
-    :clone
+    [:clone]
   end
 
 File.unlink('test.sqlite3') rescue nil
@@ -218,31 +220,35 @@ class AttrDefaultTest < Test::Unit::TestCase
     assert_equal "initial.com", domain.domain
   end
 
-  def test_dup_touched_state_when_duped_before_save_new_record_true
-    u = TestUser.new :first_name => 'John', :last_name => 'Doe'
-    u.last_name = 'overridden'
-    u2 = u.send(DUP_METHOD)
-    assert_equal 'overridden', u2.read_attribute(:last_name)
-    assert_equal 'overridden', u2.last_name
+  def test_dup_and_clone_touched_state_when_duped_or_cloned_before_save_new_record_true
+    DUP_METHODS.each do |dup|
+      u = TestUser.new :first_name => 'John', :last_name => 'Doe'
+      u.last_name = 'overridden'
+      u2 = u.send(dup)
+      assert_equal 'overridden', u2.read_attribute(:last_name)
+      assert_equal 'overridden', u2.last_name
+    end
   end
 
-  def test_dup_touched_state_when_duped_after_save_new_record_false
-    u = TestUser.new(:first_name => 'John', :last_name => 'Doe')
-    u.last_name = 'overridden'
-    u2 = u.send(DUP_METHOD)
-    u2.save!
-    u.save!
-    assert u.send(DUP_METHOD).instance_variable_get(:@_attr_defaults_set_from_dup)
-    assert_equal 'overridden', u.send(DUP_METHOD).last_name
-    ufind = TestUser.find(u.id)
-    u3 = ufind.send(DUP_METHOD)
-    assert_equal 'overridden', u3.read_attribute(:last_name), u3.attributes.inspect
-    assert_equal 'overridden', u3.last_name
-    u3.save!
-    assert_equal 'overridden', u2.read_attribute(:last_name)
-    assert_equal 'overridden', u2.last_name
-    assert_equal 'overridden', u3.read_attribute(:last_name)
-    assert_equal 'overridden', u3.last_name
+  def test_dup_and_clone_touched_state_when_duped_or_cloned_after_save_new_record_false
+    DUP_METHODS.each do |dup|
+      u = TestUser.new(:first_name => 'John', :last_name => 'Doe')
+      u.last_name = 'overridden'
+      u2 = u.send(dup)
+      u2.save!
+      u.save!
+      assert u.send(dup).instance_variable_get(:@_attr_defaults_set_from_dup)
+      assert_equal 'overridden', u.send(dup).last_name
+      ufind = TestUser.find(u.id)
+      u3 = ufind.send(dup)
+      assert_equal 'overridden', u3.read_attribute(:last_name), u3.attributes.inspect
+      assert_equal 'overridden', u3.last_name
+      u3.save!
+      assert_equal 'overridden', u2.read_attribute(:last_name)
+      assert_equal 'overridden', u2.last_name
+      assert_equal 'overridden', u3.read_attribute(:last_name)
+      assert_equal 'overridden', u3.last_name
+    end
   end
 
   def test_use_default_when_saved_if_not_touched_and_validation_turned_off
