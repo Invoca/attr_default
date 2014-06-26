@@ -25,10 +25,10 @@ SAVE_NO_VALIDATE =
   end
 
 DUP_METHODS =
-  if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
-    [:dup, :clone]
-  elsif Gem.loaded_specs['activesupport'].version >= Gem::Version.new('4.0')
+  if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('4.0')
     [:dup]
+  elsif Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
+    [:dup, :clone]
   else
     [:clone]
   end
