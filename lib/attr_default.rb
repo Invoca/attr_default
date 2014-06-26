@@ -101,6 +101,7 @@ module AttrDefault
         end
         result
       end
+      alias_method(:clone, :dup)
     else
       def clone
         result = super
