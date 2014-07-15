@@ -24,14 +24,7 @@ SAVE_NO_VALIDATE =
     false
   end
 
-DUP_METHODS =
-  if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('4.0')
-    [:dup]
-  elsif Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
-    [:dup, :clone]
-  else
-    [:clone]
-  end
+COPY_METHODS = [:copy]
 
 File.unlink('test.sqlite3') rescue nil
 ActiveRecord::Base.logger = Logger.new(STDERR)
@@ -220,27 +213,27 @@ class AttrDefaultTest < Test::Unit::TestCase
     assert_equal "initial.com", domain.domain
   end
 
-  def test_dup_and_clone_touched_state_when_duped_or_cloned_before_save_new_record_true
-    DUP_METHODS.each do |dup|
+  def test_copy_touched_state_when_copied_before_save_new_record_true
+    COPY_METHODS.each do |copy|
       u = TestUser.new :first_name => 'John', :last_name => 'Doe'
       u.last_name = 'overridden'
-      u2 = u.send(dup)
+      u2 = u.send(copy, :new_record => true)
       assert_equal 'overridden', u2.read_attribute(:last_name)
       assert_equal 'overridden', u2.last_name
     end
   end
 
-  def test_dup_and_clone_touched_state_when_duped_or_cloned_after_save_new_record_false
-    DUP_METHODS.each do |dup|
+  def test_copy_touched_state_when_copied_after_save_new_record_false
+    COPY_METHODS.each do |copy|
       u = TestUser.new(:first_name => 'John', :last_name => 'Doe')
       u.last_name = 'overridden'
-      u2 = u.send(dup)
+      u2 = u.send(copy, :new_record => false)
       u2.save!
       u.save!
-      assert u.send(dup).instance_variable_get(:@_attr_defaults_set_from_dup)
-      assert_equal 'overridden', u.send(dup).last_name
+      assert u.send(copy, :new_record => false).instance_variable_get(:@_attr_defaults_set_from_dup)
+      assert_equal 'overridden', u.send(copy, :new_record => false).last_name
       ufind = TestUser.find(u.id)
-      u3 = ufind.send(dup)
+      u3 = ufind.send(copy, :new_record => false)
       assert_equal 'overridden', u3.read_attribute(:last_name), u3.attributes.inspect
       assert_equal 'overridden', u3.last_name
       u3.save!

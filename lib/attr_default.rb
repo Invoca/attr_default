@@ -88,10 +88,19 @@ module AttrDefault
     def needs_time_zone_fixup?(attr_name)
       self.class.send(:create_time_zone_conversion_attribute?, attr_name, self.class.columns_hash[attr_name])
     end
-
-    if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
-      def dup
-        result = super
+    
+    def copy(opts = {})
+      if opts.key? :new_record
+        result = 
+          if defined?(super)
+            super
+          else
+            if opts[:new_record]
+              self.copy_new_record_true
+            else
+              self.copy_new_record_false # self.dup # what kind of default logic do we wire in
+            end
+          end
         result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
         result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
         if self.new_record?
@@ -100,19 +109,27 @@ module AttrDefault
           result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
         end
         result
+      else
+        # eventually phase this out with required keywords in ruby 2.0
+        raise ArgumentError, "Ambiguous call to copy please provide :new_record => (true|false)"
       end
-      alias_method(:clone, :dup)
+    end
+
+    if RUBY_VERSION == '1.8.7'
+      def copy_new_record_true
+        clone
+      end
+
+      def copy_new_record_false
+        dup
+      end
     else
-      def clone
-        result = super
-        result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
-        result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
-        if self.new_record?
-          result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
-        else
-          result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
-        end
-        result
+      def copy_new_record_true
+        dup
+      end
+
+      def copy_new_record_false
+        clone
       end
     end
   end
