@@ -115,7 +115,7 @@ module AttrDefault
       end
     end
 
-    if RUBY_VERSION == '1.8.7'
+    if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
       def copy_new_record_true
         clone
       end
