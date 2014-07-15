@@ -227,13 +227,13 @@ class AttrDefaultTest < Test::Unit::TestCase
     COPY_METHODS.each do |copy|
       u = TestUser.new(:first_name => 'John', :last_name => 'Doe')
       u.last_name = 'overridden'
-      u2 = u.send(copy, :new_record => false)
+      u2 = u.send(copy, :new_record => true)
       u2.save!
       u.save!
-      assert u.send(copy, :new_record => false).instance_variable_get(:@_attr_defaults_set_from_dup)
+      assert u.send(copy, :new_record => true).instance_variable_get(:@_attr_defaults_set_from_dup)
       assert_equal 'overridden', u.send(copy, :new_record => false).last_name
       ufind = TestUser.find(u.id)
-      u3 = ufind.send(copy, :new_record => false)
+      u3 = ufind.send(copy, :new_record => true)
       assert_equal 'overridden', u3.read_attribute(:last_name), u3.attributes.inspect
       assert_equal 'overridden', u3.last_name
       u3.save!

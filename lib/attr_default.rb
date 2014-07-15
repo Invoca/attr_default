@@ -117,19 +117,19 @@ module AttrDefault
 
     if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
       def copy_new_record_true
-        clone
+        dup
       end
 
       def copy_new_record_false
-        dup
+        clone
       end
     else
       def copy_new_record_true
-        dup
+        clone
       end
 
       def copy_new_record_false
-        clone
+        dup
       end
     end
   end
