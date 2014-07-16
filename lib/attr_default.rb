@@ -93,7 +93,7 @@ module AttrDefault
       if opts.key? :new_record
         result = 
           if defined?(super)
-            super
+            super(opts)
           else
             if opts[:new_record]
               self.copy_new_record_true
