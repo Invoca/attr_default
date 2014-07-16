@@ -223,6 +223,7 @@ class AttrDefaultTest < Test::Unit::TestCase
     end
   end
 
+  # This test is referring to the record itself returning false from #new_record? after being "cloned" i.e copy(new_record: true)
   def test_copy_touched_state_when_copied_after_save_new_record_false
     COPY_METHODS.each do |copy|
       u = TestUser.new(:first_name => 'John', :last_name => 'Doe')
@@ -231,7 +232,7 @@ class AttrDefaultTest < Test::Unit::TestCase
       u2.save!
       u.save!
       assert u.send(copy, :new_record => true).instance_variable_get(:@_attr_defaults_set_from_dup)
-      assert_equal 'overridden', u.send(copy, :new_record => false).last_name
+      assert_equal 'overridden', u.send(copy, :new_record => true).last_name
       ufind = TestUser.find(u.id)
       u3 = ufind.send(copy, :new_record => true)
       assert_equal 'overridden', u3.read_attribute(:last_name), u3.attributes.inspect

@@ -91,24 +91,25 @@ module AttrDefault
     
     def copy(opts = {})
       if opts.key? :new_record
-        result = 
-          if defined?(super)
+        if opts[:new_record]
+          result = if defined?(super)
             super(opts)
           else
-            if opts[:new_record]
-              self.copy_new_record_true
-            else
-              self.copy_new_record_false # self.dup # what kind of default logic do we wire in
-            end
+            copy_new_record_true
           end
-        result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
-        result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
-        if self.new_record?
-          result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
+          
+          result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
+          result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
+          if self.new_record?
+            result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
+          else
+            result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
+          end
+
+          result
         else
-          result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
+          self.copy_new_record_false # self.dup # what kind of default logic do we wire in
         end
-        result
       else
         # eventually phase this out with required keywords in ruby 2.0
         raise ArgumentError, "Ambiguous call to copy please provide :new_record => (true|false)"
