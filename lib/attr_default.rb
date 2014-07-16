@@ -108,7 +108,11 @@ module AttrDefault
 
           result
         else
-          self.copy_new_record_false # self.dup # what kind of default logic do we wire in
+          if defined?(super)
+            super(opts)
+          else
+            copy_new_record_false # self.dup # what kind of default logic do we wire in
+          end
         end
       else
         # eventually phase this out with required keywords in ruby 2.0
