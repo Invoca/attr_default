@@ -89,6 +89,7 @@ module AttrDefault
       self.class.send(:create_time_zone_conversion_attribute?, attr_name, self.class.columns_hash[attr_name])
     end
     
+    # Talk to Colin about this 
     def copy(opts = {})
       if opts.key? :new_record
         if opts[:new_record]
@@ -121,21 +122,11 @@ module AttrDefault
     end
 
     if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
-      def copy_new_record_true
-        dup
-      end
-
-      def copy_new_record_false
-        clone
-      end
+      alias :copy_new_record_true :dup
+      alias :copy_new_record_false :clone
     else
-      def copy_new_record_true
-        clone
-      end
-
-      def copy_new_record_false
-        dup
-      end
+      alias :copy_new_record_true :clone
+      alias :copy_new_record_false :dup
     end
   end
 end
