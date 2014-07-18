@@ -111,7 +111,7 @@ module AttrDefault
           if defined?(super)
             super(opts)
           else
-            copy_new_record_false # self.dup # what kind of default logic do we wire in
+            copy_new_record_true # self.dup # what kind of default logic do we wire in
           end
         end
       else
