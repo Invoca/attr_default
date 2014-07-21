@@ -89,7 +89,6 @@ module AttrDefault
       self.class.send(:create_time_zone_conversion_attribute?, attr_name, self.class.columns_hash[attr_name])
     end
     
-    # Talk to Colin about this 
     def copy(opts = {})
       if opts.key? :new_record
         if opts[:new_record]
@@ -112,7 +111,7 @@ module AttrDefault
           if defined?(super)
             super(opts)
           else
-            copy_new_record_true # self.dup # what kind of default logic do we wire in
+            copy_new_record_false # self.dup # what kind of default logic do we wire in
           end
         end
       else
