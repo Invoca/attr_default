@@ -88,32 +88,44 @@ module AttrDefault
     def needs_time_zone_fixup?(attr_name)
       self.class.send(:create_time_zone_conversion_attribute?, attr_name, self.class.columns_hash[attr_name])
     end
+    
+    def copy(opts = {})
+      if opts.key? :new_record
+        if opts[:new_record]
+          result = if defined?(super)
+            super(opts)
+          else
+            copy_new_record_true
+          end
+          
+          result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
+          result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
+          if self.new_record?
+            result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
+          else
+            result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
+          end
+
+          result
+        else
+          if defined?(super)
+            super(opts)
+          else
+            copy_new_record_false # self.dup # what kind of default logic do we wire in
+          end
+        end
+      else
+        # eventually phase this out with required keywords in ruby 2.0
+        raise ArgumentError, "Ambiguous call to copy please provide :new_record => (true|false)"
+      end
+    end
 
     if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
-      def dup
-        result = super
-        result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
-        result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
-        if self.new_record?
-          result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
-        else
-          result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
-        end
-        result
-      end
-      alias_method(:clone, :dup)
+      alias :copy_new_record_true :dup
+      alias :copy_new_record_false :clone
     else
-      def clone
-        result = super
-        result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
-        result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
-        if self.new_record?
-          result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
-        else
-          result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
-        end
-        result
-      end
+      alias :copy_new_record_true :clone
+      alias :copy_new_record_false :dup
     end
   end
 end
