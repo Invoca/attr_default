@@ -64,9 +64,9 @@ module AttrDefault
 
     def read_attribute_with_fixups(attr_name)
       if needs_time_zone_fixup?(attr_name)
-        cached = @attributes_cache[attr_name] and return cached
+        cached = @attributes[attr_name] and return cached
         time = read_attribute(attr_name)
-        @attributes_cache[attr_name] = time.acts_like?(:time) ? time.in_time_zone : time
+        @attributes[attr_name] = time.acts_like?(:time) ? time.in_time_zone : time
       else
         read_attribute(attr_name)
       end
