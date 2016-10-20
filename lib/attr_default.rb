@@ -12,12 +12,12 @@ module AttrDefault
         if new_record? && !@_attr_defaults_set_from_dup && !_attr_default_set[attr_name]
           reset_to_default_value(attr_name)
         end
-        read_attribute_with_fixups(attr_name)
+        read_attribute(attr_name)
       end
 
       define_method("#{attr_name}=") do |*args|
         _attr_default_set[attr_name] = true
-        write_attribute_with_fixups(attr_name, args)
+        write_attribute(attr_name, *args)
       end
 
       touch_proc = lambda { |obj| obj.send(attr_name); true }
@@ -62,59 +62,18 @@ module AttrDefault
       @_attr_default_set ||= {}
     end
 
-    def read_attribute_with_fixups(attr_name)
-      if needs_time_zone_fixup?(attr_name)
-        cached = @attributes[attr_name] and return cached
-        time = read_attribute(attr_name)
-        @attributes[attr_name] = time.acts_like?(:time) ? time.in_time_zone : time
+    def dup
+      result = super
+      result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
+      result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
+      if self.new_record?
+        result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
       else
-        read_attribute(attr_name)
+        result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
       end
+      result
     end
-
-    def write_attribute_with_fixups(attr_name, args)
-      if needs_time_zone_fixup?(attr_name)
-        time = args.first
-        unless time.acts_like?(:time)
-          time = time.is_a?(String) ? Time.zone.parse(time) : time.to_time rescue time
-        end
-        time = time.in_time_zone rescue nil if time
-        write_attribute(attr_name, time)
-      else
-        write_attribute(attr_name, *args)
-      end
-    end
-
-    def needs_time_zone_fixup?(attr_name)
-      self.class.send(:create_time_zone_conversion_attribute?, attr_name, self.class.columns_hash[attr_name])
-    end
-
-    if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
-      def dup
-        result = super
-        result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
-        result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
-        if self.new_record?
-          result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
-        else
-          result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
-        end
-        result
-      end
-      alias_method(:clone, :dup)
-    else
-      def clone
-        result = super
-        result.created_at = nil unless !result.class.columns_hash.has_key?('created_at')
-        result.updated_at = nil unless !result.class.columns_hash.has_key?('updated_at')
-        if self.new_record?
-          result.instance_variable_set(:@_attr_default_set, self._attr_default_set.dup)
-        else
-          result.instance_variable_set(:@_attr_defaults_set_from_dup, true)
-        end
-        result
-      end
-    end
+    alias_method(:clone, :dup)
   end
 end
 

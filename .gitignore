@@ -4,7 +4,6 @@
 .bundle
 .config
 .yardoc
-Gemfile.lock
 InstalledFiles
 _yardoc
 coverage
@@ -18,3 +17,4 @@ test/version_tmp
 tmp
 test/test.sqlite3
 nbproject
+.idea

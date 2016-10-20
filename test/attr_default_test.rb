@@ -1,134 +1,9 @@
-require 'rubygems'
-require 'active_support'
-require 'active_support/dependencies'
-require 'active_record'
-ActiveRecord::ActiveRecordError # work-around from https://rails.lighthouseapp.com/projects/8994/tickets/2577-when-using-activerecordassociations-outside-of-rails-a-nameerror-is-thrown
-require 'test/unit'
-require 'active_support/core_ext/logger'
-require 'hobofields' if ENV['INCLUDE_HOBO']
-
-$LOAD_PATH.unshift File.expand_path("lib", File.dirname(__FILE__))
-require 'attr_default'
-Dir.chdir(File.dirname(__FILE__))
-
-if RUBY_PLATFORM == "java"
-  database_adapter = "jdbcsqlite3"
-else
-  database_adapter = "sqlite3"
-end
-
-SAVE_NO_VALIDATE =
-  if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.0')
-    {:validate => false}
-  else
-    false
-  end
-
-DUP_METHODS =
-  if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('4.0')
-    [:dup]
-  elsif Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.1')
-    [:dup, :clone]
-  else
-    [:clone]
-  end
-
-File.unlink('test.sqlite3') rescue nil
-ActiveRecord::Base.logger = Logger.new(STDERR)
-ActiveRecord::Base.logger.level = Logger::WARN
-ActiveRecord::Base.establish_connection(
-  :adapter => database_adapter,
-  :database => 'test.sqlite3'
-)
-
-ActiveRecord::Base.connection.create_table(:test_users, :force => true) do |t|
-  t.string :first_name, :default => ''
-  t.string :last_name
-  t.string :domain, :default => 'example.com'
-  t.string :password
-  t.timestamp :timestamp
-end
-
-ActiveRecord::Base.connection.create_table(:test_domains, :force => true) do |t|
-  t.string  :type
-  t.integer :test_user_id
-  t.string :domain, :default => 'domain.com'
-  t.string :path
-  t.timestamp :created_at
-end
-
-if defined?(Rails::Railtie)
-  AttrDefault.initialize_railtie
-  AttrDefault.initialize_active_record_extensions
-end
-
-module SomeOtherModule
-
-end
-
-class TestUser < ActiveRecord::Base
-  attr_accessor     :password
-  attr_default      :password, '<none>'
-
-  if ENV['INCLUDE_HOBO']
-    fields do
-      first_name    :string, :default => '', :ruby_default => lambda { 'John' }
-      last_name     :string, :ruby_default => 'Doe'
-      domain        :string, :ruby_default => 'default.com'
-      timestamp     :timestamp, :default => lambda { (Time.zone || ActiveSupport::TimeZone['Pacific Time (US & Canada)']).now }
-    end
-  else
-    attr_default :first_name, 'John'
-    attr_default :last_name, 'Doe'
-    attr_default :domain, 'default.com'
-    attr_default :timestamp, lambda { (Time.zone || ActiveSupport::TimeZone['Pacific Time (US & Canada)']).now }
-  end
-
-  has_many :test_domains
-  has_many :test_domains_subclass, :class_name => 'TestDomainSubclass'
-end
-
-class TestDomain < ActiveRecord::Base
-  if ENV['INCLUDE_HOBO']
-    fields do
-      domain      :string, :default => lambda { test_user.domain }
-      path        :string, :ruby_default => "/path"
-    end
-  else
-    attr_default :domain, lambda { test_user.domain }
-    attr_default :path, "/path"
-  end
-
-  belongs_to :test_user
-end
-
-class TestDomainSubclass < TestDomain
-  include SomeOtherModule
-  if ENV['INCLUDE_HOBO']
-    fields do
-      domain      :string, :default => lambda { "sub_#{test_user.domain}" }
-    end
-  else
-    attr_default :domain, lambda { "sub_#{test_user.domain}" }
-  end
-end
+require_relative "test_helper.rb"
+require_relative "database_schema.rb"
+require_relative "test_models.rb"
 
 
-class AttrDefaultTest < Test::Unit::TestCase
-  def define_model_class(name = "TestClass", parent_class_name = "ActiveRecord::Base", &block)
-    Object.send(:remove_const, name) rescue nil
-    eval("class #{name} < #{parent_class_name}; end", TOPLEVEL_BINDING)
-    klass = eval(name, TOPLEVEL_BINDING)
-    klass.class_eval do
-      if respond_to?(:table_name=)
-        self.table_name = 'numbers'
-      else
-        set_table_name 'numbers'
-      end
-    end
-    klass.class_eval(&block) if block_given?
-  end
-
+class AttrDefaultTest < Minitest::Test
   def test_use_default_if_not_set
     u = TestUser.new
     assert_equal '', u.read_attribute(:first_name)
@@ -137,6 +12,20 @@ class AttrDefaultTest < Test::Unit::TestCase
 
   def test_return_the_ActiveRecord_native_type_not_the_lambda_type
     u = TestUser.new
+    assert_equal ActiveSupport::TimeWithZone, u.timestamp.class
+    begin
+      old_time_zone, Time.zone = Time.zone, 'Central Time (US & Canada)'
+      u = TestUser.new
+      assert_equal ActiveSupport::TimeWithZone, u.timestamp.class
+      assert_match /Central Time/, u.timestamp.time_zone.to_s
+    ensure
+      Time.zone = old_time_zone
+    end
+  end
+
+  def test_return_the_ActiveRecord_native_type_not_the_lambda_type_on_create
+    u = TestUser.create!
+    u = TestUser.find(u.id)
     assert_equal ActiveSupport::TimeWithZone, u.timestamp.class
     begin
       old_time_zone, Time.zone = Time.zone, 'Central Time (US & Canada)'
