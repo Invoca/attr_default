@@ -1,15 +1,28 @@
+ENV["RAILS_ENV"] = "test"
+
+require 'rubygems'
+gemfile = File.expand_path('../../Gemfile', __FILE__)
+
+ENV['BUNDLE_GEMFILE'] = gemfile
+require 'bundler'
+Bundler.setup
+
 require 'rubygems'
 require 'active_support'
 require 'active_support/dependencies'
 require 'active_record'
 ActiveRecord::ActiveRecordError # work-around from https://rails.lighthouseapp.com/projects/8994/tickets/2577-when-using-activerecordassociations-outside-of-rails-a-nameerror-is-thrown
-require 'test/unit'
-require 'active_support/core_ext/logger'
+require 'minitest'
+require 'minitest/autorun'
+#require 'active_support/core_ext/logger'
 require 'hobofields' if ENV['INCLUDE_HOBO']
+require 'pry'
+
+ActiveRecord::Base.time_zone_aware_attributes = true
+Time.zone = 'Pacific Time (US & Canada)'
 
 $LOAD_PATH.unshift File.expand_path("lib", File.dirname(__FILE__))
 require 'attr_default'
-Dir.chdir(File.dirname(__FILE__))
 
 if RUBY_PLATFORM == "java"
   database_adapter = "jdbcsqlite3"
@@ -114,7 +127,7 @@ class TestDomainSubclass < TestDomain
 end
 
 
-class AttrDefaultTest < Test::Unit::TestCase
+class AttrDefaultTest < Minitest::Test
   def define_model_class(name = "TestClass", parent_class_name = "ActiveRecord::Base", &block)
     Object.send(:remove_const, name) rescue nil
     eval("class #{name} < #{parent_class_name}; end", TOPLEVEL_BINDING)
@@ -137,6 +150,20 @@ class AttrDefaultTest < Test::Unit::TestCase
 
   def test_return_the_ActiveRecord_native_type_not_the_lambda_type
     u = TestUser.new
+    assert_equal ActiveSupport::TimeWithZone, u.timestamp.class
+    begin
+      old_time_zone, Time.zone = Time.zone, 'Central Time (US & Canada)'
+      u = TestUser.new
+      assert_equal ActiveSupport::TimeWithZone, u.timestamp.class
+      assert_match /Central Time/, u.timestamp.time_zone.to_s
+    ensure
+      Time.zone = old_time_zone
+    end
+  end
+
+  def test_return_the_ActiveRecord_native_type_not_the_lambda_type_on_create
+    u = TestUser.create!
+    u = TestUser.find(u.id)
     assert_equal ActiveSupport::TimeWithZone, u.timestamp.class
     begin
       old_time_zone, Time.zone = Time.zone, 'Central Time (US & Canada)'
