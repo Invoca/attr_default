@@ -74,6 +74,7 @@ module AttrDefault
       result
     end
     alias_method(:clone, :dup)
+  end
 end
 
 if defined?(Rails::Railtie)
