@@ -1,12 +1,6 @@
 require File.expand_path('../lib/attr_default/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.add_development_dependency 'appraisal'
-  gem.add_development_dependency 'rake', '~>0.9'
-  gem.add_development_dependency 'pry'
-  gem.add_development_dependency 'sqlite3'
-  gem.add_development_dependency 'activesupport', '~>4'
-  gem.add_development_dependency 'hobofields', '0.9.103'
   gem.authors       = ["Colin Kelley", "Nick Burwell"]
   gem.email         = ["colindkelley@gmail.com"]
   gem.description   = %q{Dynamic Ruby defaults for ActiveRecord attributes}
