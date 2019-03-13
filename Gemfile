@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rails', '~> 4.2.7.1', github: 'Invoca/rails', ref: 'b5cbebe2978242a4a356bcddb32ca55e5f616d75'
+gem 'rails', '~> 4.2.11', github: 'Invoca/rails', ref: '987dc1074da6abc43ed6bdbae834dc6b85024bbb'
 
 group :development do
   gem 'activesupport', '~>4'
