@@ -17,6 +17,11 @@ require 'minitest/autorun'
 #require 'active_support/core_ext/logger'
 require 'hobofields' if ENV['INCLUDE_HOBO']
 require 'pry'
+require "minitest/reporters"
+Minitest::Reporters.use! [
+  Minitest::Reporters::ProgressReporter.new,
+  Minitest::Reporters::JUnitReporter.new('test/reports', false)
+]
 
 require 'attr_default'
 
