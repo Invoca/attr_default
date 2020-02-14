@@ -1,7 +1,10 @@
-GIT
-  remote: git@github.com:Invoca/rails
-  revision: 987dc1074da6abc43ed6bdbae834dc6b85024bbb
-  ref: 987dc1074da6abc43ed6bdbae834dc6b85024bbb
+PATH
+  remote: .
+  specs:
+    attr_default (0.7.2)
+
+GEM
+  remote: https://rubygems.org/
   specs:
     actionmailer (4.2.11.1)
       actionpack (= 4.2.11.1)
@@ -37,37 +40,12 @@ GIT
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    rails (4.2.11.1)
-      actionmailer (= 4.2.11.1)
-      actionpack (= 4.2.11.1)
-      actionview (= 4.2.11.1)
-      activejob (= 4.2.11.1)
-      activemodel (= 4.2.11.1)
-      activerecord (= 4.2.11.1)
-      activesupport (= 4.2.11.1)
-      bundler (>= 1.3.0, < 2.0)
-      railties (= 4.2.11.1)
-      sprockets-rails
-    railties (4.2.11.1)
-      actionpack (= 4.2.11.1)
-      activesupport (= 4.2.11.1)
-      rake (>= 0.8.7)
-      thor (>= 0.18.1, < 2.0)
-
-PATH
-  remote: .
-  specs:
-    attr_default (0.7.1)
-
-GEM
-  remote: https://rubygems.org/
-  specs:
     ansi (1.5.0)
     arel (6.0.4)
-    builder (3.2.3)
-    coderay (1.1.1)
-    concurrent-ruby (1.1.5)
-    crass (1.0.5)
+    builder (3.2.4)
+    coderay (1.1.2)
+    concurrent-ruby (1.1.6)
+    crass (1.0.6)
     erubis (2.7.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
@@ -82,24 +60,34 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.7.1)
       mini_mime (>= 0.1.1)
-    method_source (0.8.2)
+    method_source (0.9.2)
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
-    minitest (5.11.3)
+    minitest (5.14.0)
     minitest-reporters (1.4.2)
       ansi
       builder
       minitest (>= 5.0)
       ruby-progressbar
-    nokogiri (1.10.7)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
-    pry (0.10.4)
+    pry (0.12.2)
       coderay (~> 1.1.0)
-      method_source (~> 0.8.1)
-      slop (~> 3.4)
-    rack (1.6.11)
+      method_source (~> 0.9.0)
+    rack (1.6.13)
     rack-test (0.6.3)
       rack (>= 1.0)
+    rails (4.2.11.1)
+      actionmailer (= 4.2.11.1)
+      actionpack (= 4.2.11.1)
+      actionview (= 4.2.11.1)
+      activejob (= 4.2.11.1)
+      activemodel (= 4.2.11.1)
+      activerecord (= 4.2.11.1)
+      activesupport (= 4.2.11.1)
+      bundler (>= 1.3.0, < 2.0)
+      railties (= 4.2.11.1)
+      sprockets-rails
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
     rails-dom-testing (1.0.9)
@@ -108,9 +96,13 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.3.0)
       loofah (~> 2.3)
+    railties (4.2.11.1)
+      actionpack (= 4.2.11.1)
+      activesupport (= 4.2.11.1)
+      rake (>= 0.8.7)
+      thor (>= 0.18.1, < 2.0)
     rake (0.9.6)
     ruby-progressbar (1.10.1)
-    slop (3.6.0)
     sprockets (4.0.0)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -119,23 +111,19 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.3.13)
-    thor (0.19.1)
+    thor (1.0.1)
     thread_safe (0.3.6)
-    tzinfo (1.2.5)
+    tzinfo (1.2.6)
       thread_safe (~> 0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (~> 4)
   attr_default!
   hobofields (= 0.9.103)
-  minitest
   minitest-reporters
   pry
-  rails (~> 4.2.11)!
-  rake (~> 0.9)
   sqlite3
 
 BUNDLED WITH
