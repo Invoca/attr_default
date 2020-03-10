@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 if RUBY_PLATFORM == "java"
   database_adapter = "jdbcsqlite3"
 else
