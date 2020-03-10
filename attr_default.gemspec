@@ -1,8 +1,8 @@
 require File.expand_path('../lib/attr_default/version', __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Colin Kelley", "Nick Burwell"]
-  gem.email         = ["colindkelley@gmail.com"]
+  gem.authors       = ['Invoca development']
+  gem.email         = ['development@invoca.com']
   gem.description   = %q{Dynamic Ruby defaults for ActiveRecord attributes}
   gem.summary       = %q{Dynamic Ruby defaults for ActiveRecord attributes. These are lazy evaluated just in time: when first accessed, or just before validation or save. This allows dynamic defaults to depend on attributes that are assigned after initialization, or on other dynamic defaults.}
   gem.homepage      = "https://github.com/RingRevenue/attr_default"
