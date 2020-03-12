@@ -2,6 +2,8 @@ PATH
   remote: .
   specs:
     attr_default (0.8.0.pre.2)
+      hobofields (~> 0.9)
+      rails (~> 4.2)
 
 GEM
   remote: https://rubygems.org/

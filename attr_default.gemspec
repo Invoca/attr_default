@@ -17,4 +17,7 @@ Gem::Specification.new do |gem|
   gem.name          = "attr_default"
   gem.require_paths = ["lib"]
   gem.version       = AttrDefault::VERSION
+
+  gem.add_dependency 'hobofields', '~> 0.9'
+  gem.add_dependency 'rails', '~> 4.2'
 end
