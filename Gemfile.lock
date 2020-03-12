@@ -124,9 +124,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (~> 4)
   attr_default!
-  hobofields (= 0.9.103)
   minitest
   minitest-reporters
   pry
