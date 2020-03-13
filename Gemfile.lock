@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     attr_default (0.8.0.pre.4)
-      hobofields (~> 0.9)
       rails (~> 4.2)
 
 GEM
@@ -51,10 +50,10 @@ GEM
     erubis (2.7.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    hobofields (0.9.106)
-      hobosupport (= 0.9.106)
+    hobofields (0.9.103)
+      hobosupport (= 0.9.103)
       rails (>= 2.2.2)
-    hobosupport (0.9.106)
+    hobosupport (0.9.103)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     loofah (2.4.0)
@@ -124,7 +123,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport (~> 4)
   attr_default!
+  hobofields (= 0.9.103)
   minitest
   minitest-reporters
   pry
