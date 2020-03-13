@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     attr_default (0.8.0.pre.5)
-      rails (~> 4.2)
+      hobofields (~> 0.9)
 
 GEM
   remote: https://rubygems.org/
@@ -125,7 +125,6 @@ PLATFORMS
 DEPENDENCIES
   activesupport (~> 4)
   attr_default!
-  hobofields (= 0.9.103)
   minitest
   minitest-reporters
   pry
