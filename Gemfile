@@ -8,7 +8,7 @@ group :development do
   gem 'activesupport', '~>4'
   gem 'hobofields',    '0.9.103'
   gem 'pry'
-  gem 'rake',          '~>0.9'
+  gem 'rake'
   gem 'sqlite3'
 
   gem 'minitest'
