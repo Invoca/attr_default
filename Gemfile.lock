@@ -124,7 +124,7 @@ DEPENDENCIES
   minitest
   minitest-reporters
   pry
-  rake (~> 0.9)
+  rake
   sqlite3
 
 BUNDLED WITH
