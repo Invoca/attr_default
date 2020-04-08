@@ -11,9 +11,6 @@ Gem::Specification.new do |gem|
   gem.description   = %q{Dynamic Ruby defaults for ActiveRecord attributes}
   gem.summary       = %q{Dynamic Ruby defaults for ActiveRecord attributes. These are lazy evaluated just in time: when first accessed, or just before validation or save. This allows dynamic defaults to depend on attributes that are assigned after initialization, or on other dynamic defaults.}
   gem.homepage      = "https://github.com/Invoca/attr_default"
-  gem.metadata = {
-    "allowed_push_host" => "https://rubygems.org"
-  }
 
   gem.metadata = {
     'allowed_push_host' => 'https://rubygems.org'
