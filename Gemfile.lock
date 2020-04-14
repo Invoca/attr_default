@@ -1,7 +1,11 @@
-GIT
-  remote: git@github.com:Invoca/rails
-  revision: 987dc1074da6abc43ed6bdbae834dc6b85024bbb
-  ref: 987dc1074da6abc43ed6bdbae834dc6b85024bbb
+PATH
+  remote: .
+  specs:
+    attr_default (0.8.0.pre.7)
+      rails (~> 4.2)
+
+GEM
+  remote: https://rubygems.org/
   specs:
     actionmailer (4.2.11.1)
       actionpack (= 4.2.11.1)
@@ -37,44 +41,15 @@ GIT
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    rails (4.2.11.1)
-      actionmailer (= 4.2.11.1)
-      actionpack (= 4.2.11.1)
-      actionview (= 4.2.11.1)
-      activejob (= 4.2.11.1)
-      activemodel (= 4.2.11.1)
-      activerecord (= 4.2.11.1)
-      activesupport (= 4.2.11.1)
-      bundler (>= 1.3.0, < 2.0)
-      railties (= 4.2.11.1)
-      sprockets-rails
-    railties (4.2.11.1)
-      actionpack (= 4.2.11.1)
-      activesupport (= 4.2.11.1)
-      rake (>= 0.8.7)
-      thor (>= 0.18.1, < 2.0)
-
-PATH
-  remote: .
-  specs:
-    attr_default (0.7.2)
-
-GEM
-  remote: https://rubygems.org/
-  specs:
     ansi (1.5.0)
     arel (6.0.4)
     builder (3.2.3)
     coderay (1.1.1)
-    concurrent-ruby (1.1.5)
-    crass (1.0.5)
+    concurrent-ruby (1.1.6)
+    crass (1.0.6)
     erubis (2.7.0)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
-    hobofields (0.9.103)
-      hobosupport (= 0.9.103)
-      rails (>= 2.2.2)
-    hobosupport (0.9.103)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     loofah (2.4.0)
@@ -100,6 +75,17 @@ GEM
     rack (1.6.13)
     rack-test (0.6.3)
       rack (>= 1.0)
+    rails (4.2.11.1)
+      actionmailer (= 4.2.11.1)
+      actionpack (= 4.2.11.1)
+      actionview (= 4.2.11.1)
+      activejob (= 4.2.11.1)
+      activemodel (= 4.2.11.1)
+      activerecord (= 4.2.11.1)
+      activesupport (= 4.2.11.1)
+      bundler (>= 1.3.0, < 2.0)
+      railties (= 4.2.11.1)
+      sprockets-rails
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
     rails-dom-testing (1.0.9)
@@ -108,7 +94,12 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.3.0)
       loofah (~> 2.3)
-    rake (13.0.1)
+    railties (4.2.11.1)
+      actionpack (= 4.2.11.1)
+      activesupport (= 4.2.11.1)
+      rake (>= 0.8.7)
+      thor (>= 0.18.1, < 2.0)
+    rake (0.9.6)
     ruby-progressbar (1.10.1)
     slop (3.6.0)
     sprockets (4.0.0)
@@ -119,9 +110,9 @@ GEM
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
     sqlite3 (1.3.13)
-    thor (0.19.1)
+    thor (1.0.1)
     thread_safe (0.3.6)
-    tzinfo (1.2.5)
+    tzinfo (1.2.6)
       thread_safe (~> 0.1)
 
 PLATFORMS
@@ -130,11 +121,9 @@ PLATFORMS
 DEPENDENCIES
   activesupport (~> 4)
   attr_default!
-  hobofields (= 0.9.103)
   minitest
   minitest-reporters
   pry
-  rails (~> 4.2.11)!
   rake
   sqlite3
 

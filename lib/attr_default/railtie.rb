@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AttrDefault
   # Rails 3 initialization
   def self.initialize_railtie

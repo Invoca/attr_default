@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AttrDefault
   module ClassMethods
     def attr_default attr_name, default
