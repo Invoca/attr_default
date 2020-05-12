@@ -27,28 +27,28 @@ pipeline {
           steps {
             sh 'JUNIT_OUTPUT_DIR=test/reports/current bundle exec rake'
           }
-          always { junit 'test/reports/current/*.xml' }
+          post { always { junit 'test/reports/current/*.xml' } }
         }
 
         stage('Rails 4') {
           steps {
             sh 'JUNIT_OUTPUT_DIR=test/reports/rails4 bundle exec appraisal rails-4 rake'
           }
-          always { junit 'test/reports/rails4/*.xml' }
+          post { always { junit 'test/reports/rails4/*.xml' } }
         }
 
         stage('Rails 5') {
           steps {
             sh 'JUNIT_OUTPUT_DIR=test/reports/rails5 bundle exec appraisal rails-5 rake'
           }
-          always { junit 'test/reports/rails5/*.xml' }
+          post { always { junit 'test/reports/rails5/*.xml' } }
         }
 
         stage('Rails 6') {
           steps {
             sh 'JUNIT_OUTPUT_DIR=test/reports/rails5 bundle exec appraisal rails-6 rake'
           }
-          always { junit 'test/reports/rails6/*.xml' }
+          post { always { junit 'test/reports/rails6/*.xml' } }
         }
       }
     }
