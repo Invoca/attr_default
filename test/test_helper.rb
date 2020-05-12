@@ -20,10 +20,13 @@ require 'minitest/autorun'
 require 'hobofields' if ENV['INCLUDE_HOBO']
 require 'pry'
 require "minitest/reporters"
-Minitest::Reporters.use! [
+
+junit_ouptut_dir = ENV["JUNIT_OUTPUT_DIR"].presence || "test/reports"
+
+Minitest::Reporters.use!([
   Minitest::Reporters::ProgressReporter.new,
-  Minitest::Reporters::JUnitReporter.new('test/reports', false)
-]
+  Minitest::Reporters::JUnitReporter.new(junit_ouptut_dir)
+])
 
 require 'attr_default'
 
