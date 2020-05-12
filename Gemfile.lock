@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     attr_default (0.8.0)
-      rails (~> 4.2)
+      rails (>= 4.2, < 7)
 
 GEM
   remote: https://rubygems.org/
