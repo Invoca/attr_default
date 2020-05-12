@@ -42,6 +42,10 @@ GEM
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
     ansi (1.5.0)
+    appraisal (2.2.0)
+      bundler
+      rake
+      thor (>= 0.14.0)
     arel (6.0.4)
     builder (3.2.3)
     coderay (1.1.1)
@@ -119,7 +123,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (~> 4)
+  appraisal
   attr_default!
   minitest
   minitest-reporters
