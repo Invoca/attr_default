@@ -22,7 +22,7 @@ DUP_METHODS =
       [:clone]
     end
 
-database_file = ENV['SQLITE3_FILE_PATH'].presence || 'test.sqlite'
+database_file = ENV['SQLITE3_FILE_PATH'].presence || 'test/test.sqlite3'
 
 File.unlink(database_file) rescue nil
 ActiveRecord::Base.logger = Logger.new(STDERR)
