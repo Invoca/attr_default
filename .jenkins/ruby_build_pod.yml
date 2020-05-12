@@ -4,8 +4,8 @@ kind: Pod
 metadata:
   labels:
     jenkins/attr_default: 'true'
-    namespace: jenkins
-    name: attr_default
+  namespace: jenkins
+  name: attr_default
 spec:
   containers:
   - name: ruby
