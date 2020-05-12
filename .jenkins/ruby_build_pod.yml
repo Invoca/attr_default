@@ -12,7 +12,7 @@ spec:
     image: ruby:2.6.1
     tty: true
     resources:
-    requests:
-      memory: "100Mi"
+      requests:
+        memory: "100Mi"
     command:
       - cat
