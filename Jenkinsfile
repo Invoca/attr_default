@@ -1,56 +1,74 @@
 #!/usr/bin/groovy
 @Library('jenkins-pipeline@v0.4.4')
-import com.invoca.docker.*;
+import com.invoca.utils.*;
 
 pipeline {
-  agent { 
+  agent {
     kubernetes {
       defaultContainer 'ruby'
-      yaml '''
-apiVersion: v1
-kind: Pod
-metadata:
-  labels:
-    jenkins/attr-default: true
-  namespace: jenkins
-  name: attr-default
-spec:
-  containers:
-  - name: ruby
-    image: ruby:2.6.1
-    tty: true
-    command:
-    - cat
-'''
+      yamlFile '.jenkins/ruby_build_pod.yml'
     }
   }
+
+  environment { GITHUB_TOKEN = credentials('github_token') }
+
   stages {
-    stage('Unit Tests') {
-      environment { 
-        GITHUB_KEY = credentials('github_key') 
-      }
-
+    stage('Setup') {
       steps {
-        script {
-          sh '''
-            # get SSH setup inside the container
-            eval `ssh-agent -s`
-            echo "$GITHUB_KEY" | ssh-add -
-            mkdir -p /root/.ssh
-            ssh-keyscan -t rsa github.com > /root/.ssh/known_hosts
+        updateGitHubStatus('clean-build', 'pending', 'Unit tests.')
+        sh 'bundle install'
+        sh 'bundle exec appraisal install'
+      }
+    }
 
-            # run tests
-            bundle install --path vendor/bundle
-            bundle exec rake
-          '''
+    stage('Appraisals') {
+      parallel {
+        stage('Current') {
+          steps {
+            sh 'JUNIT_OUTPUT_DIR=test/reports/current bundle exec rake'
+          }
+          always { junit 'test/reports/current/*.xml' }
+        }
+
+        stage('Rails 4') {
+          steps {
+            sh 'JUNIT_OUTPUT_DIR=test/reports/rails4 bundle exec appraisal rails-4 rake'
+          }
+          always { junit 'test/reports/rails4/*.xml' }
+        }
+
+        stage('Rails 5') {
+          steps {
+            sh 'JUNIT_OUTPUT_DIR=test/reports/rails5 bundle exec appraisal rails-5 rake'
+          }
+          always { junit 'test/reports/rails5/*.xml' }
+        }
+
+        stage('Rails 6') {
+          steps {
+            sh 'JUNIT_OUTPUT_DIR=test/reports/rails5 bundle exec appraisal rails-6 rake'
+          }
+          always { junit 'test/reports/rails6/*.xml' }
         }
       }
-
-      post {
-        always { junit 'test/reports/*.xml' }
-      }
     }
   }
 
-  post { always { notifySlack(currentBuild.result) } }
+  post {
+    success { updateGitHubStatus('clean-build', 'success', 'Unit tests.') }
+    failure { updateGitHubStatus('clean-build', 'failure', 'Unit tests.') }
+    always  { notifySlack(currentBuild.result) }
+  }
+}
+
+void updateGitHubStatus(String context, String status, String description) {
+  gitHubStatus([
+    repoSlug:    'Invoca/attr_default',
+    sha:         env.GIT_COMMIT,
+    description: description,
+    context:     context,
+    targetURL:   env.RUN_DISPLAY_URL,
+    token:       env.GITHUB_TOKEN,
+    status:      status
+  ])
 }
