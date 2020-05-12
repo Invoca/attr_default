@@ -21,32 +21,36 @@ pipeline {
       }
     }
 
-    stage('Appraise Current') {
-      steps {
-        sh 'JUNIT_OUTPUT_DIR=test/reports/current bundle exec rake'
-      }
-      post { always { junit 'test/reports/current/*.xml' } }
-    }
+    stage('Appraisals') {
+      parallel {
+        stage('Current') {
+          steps {
+            sh 'SQLITE3_FILE_PATH=test/test.current.sqlite3 JUNIT_OUTPUT_DIR=test/reports/current bundle exec rake'
+          }
+          post { always { junit 'test/reports/current/*.xml' } }
+        }
 
-    stage('Appraise Rails 4') {
-      steps {
-        sh 'JUNIT_OUTPUT_DIR=test/reports/rails4 bundle exec appraisal rails-4 rake'
-      }
-      post { always { junit 'test/reports/rails4/*.xml' } }
-    }
+        stage('Rails 4') {
+          steps {
+            sh 'SQLITE3_FILE_PATH=test/test.rails4.sqlite3 JUNIT_OUTPUT_DIR=test/reports/rails4 bundle exec appraisal rails-4 rake'
+          }
+          post { always { junit 'test/reports/rails4/*.xml' } }
+        }
 
-    stage('Appraise Rails 5') {
-      steps {
-        sh 'JUNIT_OUTPUT_DIR=test/reports/rails5 bundle exec appraisal rails-5 rake'
-      }
-      post { always { junit 'test/reports/rails5/*.xml' } }
-    }
+        stage('Rails 5') {
+          steps {
+            sh 'SQLITE3_FILE_PATH=test/test.rails5.sqlite3 JUNIT_OUTPUT_DIR=test/reports/rails5 bundle exec appraisal rails-5 rake'
+          }
+          post { always { junit 'test/reports/rails5/*.xml' } }
+        }
 
-    stage('Appraise Rails 6') {
-      steps {
-        sh 'JUNIT_OUTPUT_DIR=test/reports/rails5 bundle exec appraisal rails-6 rake'
+        stage('Rails 6') {
+          steps {
+            sh 'SQLITE3_FILE_PATH=test/test.rails6.sqlite3 JUNIT_OUTPUT_DIR=test/reports/rails6 bundle exec appraisal rails-6 rake'
+          }
+          post { always { junit 'test/reports/rails6/*.xml' } }
+        }
       }
-      post { always { junit 'test/reports/rails6/*.xml' } }
     }
   }
 
