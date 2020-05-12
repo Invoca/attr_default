@@ -22,13 +22,14 @@ DUP_METHODS =
       [:clone]
     end
 
+database_file = ENV['SQLITE3_FILE_PATH'].presence || 'test.sqlite'
 
-File.unlink('test.sqlite3') rescue nil
+File.unlink(database_file) rescue nil
 ActiveRecord::Base.logger = Logger.new(STDERR)
 ActiveRecord::Base.logger.level = Logger::WARN
 ActiveRecord::Base.establish_connection(
     :adapter => database_adapter,
-    :database => 'test.sqlite3'
+    :database => database_file
 )
 
 ActiveRecord::Base.connection.create_table(:test_users, :force => true) do |t|
