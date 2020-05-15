@@ -11,10 +11,10 @@ doc/
 lib/bundler/man
 pkg
 rdoc
-test/reports/*
+test/reports
 test/tmp
 test/version_tmp
 tmp
-test/test.sqlite3
 nbproject
 .idea
+gemfiles/*.lock
