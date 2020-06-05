@@ -63,7 +63,7 @@ GEM
       tzinfo (~> 1.1)
       zeitwerk (~> 2.2, >= 2.2.2)
     ansi (1.5.0)
-    appraisal (2.2.0)
+    appraisal (2.3.0)
       bundler
       rake
       thor (>= 0.14.0)
