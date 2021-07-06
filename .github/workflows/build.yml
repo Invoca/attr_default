@@ -17,6 +17,9 @@ jobs:
         include:
         - ruby: 2.4
           gemfile: gemfiles/rails_4.gemfile
+        exclude:
+        - ruby: 2.7
+          gemfile: gemfiles/rails_4.gemfile
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
