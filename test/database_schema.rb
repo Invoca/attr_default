@@ -6,13 +6,6 @@ else
   database_adapter = "sqlite3"
 end
 
-SAVE_NO_VALIDATE =
-    if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('3.0')
-      {:validate => false}
-    else
-      false
-    end
-
 DUP_METHODS =
     if Gem.loaded_specs['activesupport'].version >= Gem::Version.new('4.0')
       [:dup]
