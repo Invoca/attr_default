@@ -149,7 +149,7 @@ class AttrDefaultTest < Minitest::Test
     # not touched or saved yet, still SQL default
     assert_equal "domain.com", domain.read_attribute(:domain)
 
-    domain.save(SAVE_NO_VALIDATE)
+    domain.save(validate: false)
 
     # now it should be set to Ruby default
     assert_equal "initial.com", domain.read_attribute(:domain)
