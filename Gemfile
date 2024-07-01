@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'appraisal'
+gem 'appraisal-matrix'
 gem 'pry'
 gem 'rake'
 gem 'sqlite3'

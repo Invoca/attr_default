@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.0 - Unreleased
+### Removed
+- Removed support for EOL versions of Ruby (< 3.1) and Rails (< 6.0)
+
 ## [0.10.0] - Unreleased
 ### Added
 - Added explicit support for Ruby 2.7, 3.0, and 3.1
