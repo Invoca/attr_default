@@ -1,0 +1,33 @@
+---
+version: 2
+registries:
+  gem-fury:
+    type: rubygems-server
+    url: https://gem.fury.io/invoca
+    token: ${{secrets.BUNDLE_GEM__FURY__IO}}
+    replaces-base: true
+updates:
+- package-ecosystem: bundler
+  directory: "/"
+  registries: "*"
+  schedule:
+    interval: weekly
+    day: monday
+    time: "08:00"
+    timezone: PST8PDT
+  open-pull-requests-limit: 10
+  versioning-strategy: auto
+  commit-message:
+    prefix: No-Jira
+    include: scope
+  groups:
+    minor-patch-versions: # Group together minor / patch updates.
+      applies-to: "version-updates"
+      update-types:
+      - "minor"
+      - "patch"
+    minor-patch-security:
+        applies-to: "security-updates"
+        update-types:
+        - "minor"
+        - "patch"
