@@ -8,7 +8,7 @@ gem 'appraisal'
 gem 'appraisal-matrix'
 gem 'pry'
 gem 'rake'
-gem 'sqlite3'
+gem 'sqlite3', '~> 1.4'
 
 gem 'minitest'
 gem 'minitest-reporters'
