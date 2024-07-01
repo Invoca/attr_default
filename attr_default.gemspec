@@ -20,5 +20,7 @@ Gem::Specification.new do |gem|
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/.*\.rb})
 
-  gem.add_dependency 'rails', '>= 5.2', '< 7'
+  gem.required_ruby_version = '>= 3.1'
+
+  gem.add_dependency 'rails', '>= 6.0'
 end

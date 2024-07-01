@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
-appraise 'rails-5' do
-  gem 'rails', '~> 5.2'
-end
+require 'appraisal/matrix'
 
-appraise 'rails-6' do
-  gem 'rails', '~> 6.0'
+appraisal_matrix(rails: "6.0") do
+  gem 'sqlite3', '~> 1.4'
 end
