@@ -19,6 +19,8 @@ metadata:
   tags:
   - ruby
   - gem
+  - private
+  - rails-dependent
   annotations:
     buildkite.com/project-slug: Invoca/attr_default
     github.com/project-slug: Invoca/attr_default
