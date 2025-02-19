@@ -2,6 +2,6 @@
 
 require 'appraisal/matrix'
 
-appraisal_matrix(rails: "6.0") do
+appraisal_matrix(rails: "7.0") do
   gem 'sqlite3', '~> 1.4'
 end
