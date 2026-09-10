@@ -12,6 +12,8 @@ gem 'sqlite3', '~> 1.4'
 
 gem 'minitest'
 gem 'minitest-reporters'
+gem 'simplecov', '~> 0.22'
+gem 'simplecov-lcov', '~> 0.8'
 
 
 gem "concurrent-ruby", "~> 1.3", "< 1.3.5"

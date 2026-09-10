@@ -96,6 +96,7 @@ GEM
     connection_pool (2.4.1)
     crass (1.0.6)
     date (3.3.4)
+    docile (1.4.1)
     drb (2.2.1)
     erubi (1.13.0)
     globalid (1.2.1)
@@ -189,6 +190,13 @@ GEM
     reline (0.5.9)
       io-console (~> 0.5)
     ruby-progressbar (1.13.0)
+    simplecov (0.22.0)
+      docile (~> 1.1)
+      simplecov-html (~> 0.11)
+      simplecov_json_formatter (~> 0.1)
+    simplecov-html (0.13.2)
+    simplecov-lcov (0.9.0)
+    simplecov_json_formatter (0.1.4)
     sqlite3 (1.7.3-arm64-darwin)
     sqlite3 (1.7.3-x86_64-darwin)
     sqlite3 (1.7.3-x86_64-linux)
@@ -205,6 +213,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-23
+  arm64-darwin-24
   x86_64-darwin-23
   x86_64-linux
 
@@ -220,6 +229,8 @@ DEPENDENCIES
   mutex_m (>= 0.2.0)
   pry
   rake
+  simplecov (~> 0.22)
+  simplecov-lcov (~> 0.8)
   sqlite3 (~> 1.4)
 
 BUNDLED WITH
