@@ -19,3 +19,4 @@ tmp
 nbproject
 .idea
 gemfiles/*.lock
+/Gemfile.lock
