@@ -1,9 +1,35 @@
 ---
-name: Pipeline
+name: BACON-490 test plan
 on: [push]
 jobs:
-  tests:
-    uses: Invoca/ruby-test-matrix-workflow/.github/workflows/ruby-test-matrix.yml@main
+  v7:
+    uses: Invoca/ruby-test-matrix-workflow/.github/workflows/ruby-test-matrix.yml@BACON-490-codecov-upload
     secrets: inherit
     with:
+      ruby-versions: '["3.3"]'
       test-command: "bundle exec rake"
+
+  no_coverage:
+    uses: Invoca/ruby-test-matrix-workflow/.github/workflows/ruby-test-matrix.yml@BACON-490-codecov-upload
+    secrets: inherit
+    with:
+      ruby-versions: '["3.3"]'
+      test-command: "true"
+
+  bad_token_soft:
+    uses: Invoca/ruby-test-matrix-workflow/.github/workflows/ruby-test-matrix.yml@BACON-490-codecov-upload
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.BACON_490_INVALID_CODECOV_TOKEN }}
+    with:
+      ruby-versions: '["3.3"]'
+      test-command: "bundle exec rake"
+      coverage-fail-on-error: false
+
+  bad_token_hard:
+    uses: Invoca/ruby-test-matrix-workflow/.github/workflows/ruby-test-matrix.yml@BACON-490-codecov-upload
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.BACON_490_INVALID_CODECOV_TOKEN }}
+    with:
+      ruby-versions: '["3.3"]'
+      test-command: "bundle exec rake"
+      coverage-fail-on-error: true
