@@ -1,0 +1,39 @@
+codecov:
+  # Keep this false to show coverage results before the full CI pipeline completes.
+  require_ci_to_pass: false
+
+
+ignore:
+
+  - "vendor/**/*"
+  - "node_modules/**/*"
+  - "tmp/**/*"
+  - "public/assets/**/*"
+  - "db/migrate/**/*"
+  - "spec/**/*"
+  - "test/**/*"
+
+
+
+flags:
+
+
+  unit: {}
+
+
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        # Soft rollout: do not fail checks yet; tighten after the baseline stabilizes.
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+
+
