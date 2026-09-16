@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "simplecov_helper"
+
 ENV["RAILS_ENV"] = "test"
 
 require 'rubygems'
